@@ -1,0 +1,10 @@
+
+cloudflare:
+  ip_list:
+    url: 'https://anycast.freecdn.workers.dev/'
+  test:
+    batch_ping: 1
+    ping_count: 3
+    speed_test_count: 3
+    speed_test_time: 5
+

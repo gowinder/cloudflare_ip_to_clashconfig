@@ -3,13 +3,17 @@ cloudflare:
   ip_list:
     url: 'https://anycast.freecdn.workers.dev/'
   test:
-    ping_thread: 50
+    ping_thread: 100
     ping_count: 3
     speed_test_count: 3
-    speed_test_time: 5
     speed_start: 5000
     speed_end: 50000
     speed_step: 5000
+    host: 'speed.cloudflare.com'
+    path: '__down?bytes=1000000000'
+    download_chunk: 1024
+    download_size: 10485760
+    download_time: 10000
 
   result:
     select_count: 20
@@ -17,6 +21,9 @@ cloudflare:
   log:
     ip_list: true
     ping: false
+    sorted_ping_list: true
+    speed: true
+    sorted_speed_list: true
 
 openclash:
   use_ip: 3

@@ -10,10 +10,23 @@ from multiprocessing.pool import ThreadPool
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 import threading
+import socket
+from datetime import datetime, timedelta 
 
 PING_MAX = 5000
-SPEED_MIN = 0
+SPEED_MIN = 99999999999
 
+dns_cache = {}
+prv_getaddrinfo = socket.getaddrinfo
+def new_getaddrinfo(*args):
+    # Uncomment to see what calls to `getaddrinfo` look like.
+    # print(args)
+    try:
+        return dns_cache[args[:2]] # hostname and port
+    except KeyError:
+        return prv_getaddrinfo(*args)
+
+socket.getaddrinfo = new_getaddrinfo
 
 class speed_test(object):
     def __init__(self, ip: str):
@@ -23,8 +36,8 @@ class speed_test(object):
         self.ping_avg = PING_MAX
         self.lost_rate = 1.0
         self.speed_max = 0
-        self.speed_min = 0
-        self.speed_avg = 0
+        self.speed_min = SPEED_MIN
+        self.speed_avg = SPEED_MIN
 
     def print_ping(self):
         print(' ip:', self.ip, ', lost:', self.lost_rate * 100, ', avg:', self.ping_avg, ', max:', self.ping_max, ', min:', self.ping_min)
@@ -61,9 +74,49 @@ class speed_test(object):
             self.ping_avg = all_time / (count - lost)
         self.lost_rate = lost / count
 
-    def speed_test(self, count: int, time):
-        pass
+    def download_test(self, host, path, chunk_size, max_size, max_time, log):
+        url = 'https://%s/%s' % (host, path)
+        headers = {'HOST': host}
 
+        # from https://stackoverflow.com/a/44378047
+        key = (host, 443)
+        value = (socket.AddressFamily.AF_INET, 0, 0, '', (self.ip, 443))
+        dns_cache[key] = [value]
+        try:
+            response = requests.get(url, headers=headers, stream = True, timeout=max_time + 1)
+            content_size = int(response.headers['content-length'])
+            start_tick = datetime.now()
+            downloaded = 0
+            for data in response.iter_content(chunk_size=chunk_size):
+                if (datetime.now() - start_tick).seconds >= max_time:
+                    break
+                if downloaded >= max_size:
+                    break
+                downloaded += len(data)
+            
+            t = datetime.now() - start_tick
+        except Exception as ex:
+            print(ex)
+            downloaded = 0
+            t = timedelta(seconds = max_time)
+        speed = downloaded / t.seconds
+        if log:
+            print('speed ', self.ip, ': speed:', speed)
+        return speed, downloaded, t
+
+    def speed_test(self, host, path, chunk_size, max_size, max_time, log, count: int):
+        total = 0
+        all_t = timedelta(seconds=0)
+        for i in range(count):
+            speed, downloaded, t = self.download_test(host, path, chunk_size, max_size, max_time, log)
+            self.speed_max = max(speed, self.speed_max)
+            self.speed_min = min(speed, self.speed_min)
+            total += downloaded
+            all_t += t
+        self.speed_avg = total / all_t.seconds
+    
+    def print_speed(self):
+        print(self.ip, ' avg:', self.speed_avg, ', max:', self.speed_max, ', min:', self.speed_min)
 
 class cf_speed(object):
     def __init__(self):
@@ -91,6 +144,8 @@ class cf_speed(object):
         for ip in self.ip_list:
             st = speed_test(ip)
             self.speed_list.append(st)
+
+        self.speed_list = self.speed_list[:10]
 
     def increase_pinged(self):
         self.pinged_mutex.acquire()
@@ -132,11 +187,22 @@ class cf_speed(object):
 
         self.speed_list = self.speed_list[:self.cfg['cloudflare']['result']['select_count']]
 
-        for st in self.speed_list:
-            st.print_ping()
+        if self.cfg['cloudflare']['log']['sorted_ping_list']:
+            for st in self.speed_list:
+                st.print_ping()
 
     def speed_test(self):
-        pass
+        for st in self.speed_list:
+            t = self.cfg['cloudflare']['test']
+            st.speed_test(t['host'], t['path'], 
+                t['download_chunk'], t['download_size'], 
+                t['download_time'], self.cfg['cloudflare']['log']['speed'],
+                t['speed_test_count'])
+
+        self.speed_list.sort(key=lambda st: (-st.speed_avg))
+        if self.cfg['cloudflare']['log']['sorted_speed_list']:
+            for st in self.speed_list:
+                st.print_speed()
 
     def generate_openclash_config(self):
         pass

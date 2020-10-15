@@ -3,8 +3,21 @@ cloudflare:
   ip_list:
     url: 'https://anycast.freecdn.workers.dev/'
   test:
-    batch_ping: 1
+    ping_thread: 50
     ping_count: 3
     speed_test_count: 3
     speed_test_time: 5
+    speed_start: 5000
+    speed_end: 50000
+    speed_step: 5000
+
+  result:
+    select_count: 20
+
+  log:
+    ip_list: true
+    ping: false
+
+openclash:
+  use_ip: 3
 

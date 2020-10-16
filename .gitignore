@@ -149,3 +149,5 @@ cython_debug/
 
 .vscode/
 .venv/
+
+config.yaml

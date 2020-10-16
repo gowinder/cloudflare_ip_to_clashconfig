@@ -12,6 +12,7 @@ from tqdm import tqdm
 import threading
 import socket
 from datetime import datetime, timedelta 
+from requests_toolbelt.adapters import host_header_ssl
 
 PING_MAX = 5000
 SPEED_MIN = 99999999999
@@ -75,7 +76,9 @@ class speed_test(object):
         self.lost_rate = lost / count
 
     def download_test(self, host, path, chunk_size, max_size, max_time, log):
-        url = 'https://%s/%s' % (host, path)
+        s = requests.Session()
+        s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
+        url = 'https://%s%s' % (host, path)
         headers = {'HOST': host}
 
         # from https://stackoverflow.com/a/44378047
@@ -83,7 +86,7 @@ class speed_test(object):
         value = (socket.AddressFamily.AF_INET, 0, 0, '', (self.ip, 443))
         dns_cache[key] = [value]
         try:
-            response = requests.get(url, headers=headers, stream = True, timeout=max_time + 1)
+            response = s.get(url, headers=headers, stream = True, timeout=max_time + 1)
             content_size = int(response.headers['content-length'])
             start_tick = datetime.now()
             downloaded = 0
@@ -145,7 +148,9 @@ class cf_speed(object):
             st = speed_test(ip)
             self.speed_list.append(st)
 
-        # self.speed_list = self.speed_list[:10]
+        max_ip = self.cfg['cloudflare']['test']['map_ip']
+        if max_ip != -1:
+            self.speed_list = self.speed_list[:max_ip]
 
     def increase_pinged(self):
         self.pinged_mutex.acquire()

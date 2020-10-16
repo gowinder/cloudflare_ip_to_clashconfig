@@ -3,21 +3,20 @@ cloudflare:
   ip_list:
     url: 'https://anycast.freecdn.workers.dev/'
   test:
-    max_ip: 10
+    max_ip: -1 # -1 unlimit, use all
     ping_thread: 100
     ping_count: 2
     speed_test_count: 1
     speed_start: 5000
     speed_end: 50000
-    speed_step: 5000
     host: 'speed.cloudflare.com'
     path: '/__down?bytes=1000000000'
     download_chunk: 1024
-    download_size: 10485760
-    download_time: 10000
+    download_size: 10485760 # test download data size
+    download_time: 10 # seconds, size and time reach on will end download
 
   result:
-    select_count: 20
+    select_count: 20 # ip list count after ping result to test speed
 
   log:
     ip_list: true

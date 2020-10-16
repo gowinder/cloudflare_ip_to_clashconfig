@@ -148,7 +148,7 @@ class cf_speed(object):
             st = speed_test(ip)
             self.speed_list.append(st)
 
-        max_ip = self.cfg['cloudflare']['test']['map_ip']
+        max_ip = self.cfg['cloudflare']['test']['max_ip']
         if max_ip != -1:
             self.speed_list = self.speed_list[:max_ip]
 

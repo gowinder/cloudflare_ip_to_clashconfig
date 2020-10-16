@@ -91,6 +91,8 @@ class speed_test(object):
             downloaded = 0
             t = timedelta(seconds = max_time)
             succ = False
+        if t.seconds == 0:
+            t = timedelta(seconds=max_time)
         speed = downloaded / t.seconds
         if log:
             print('ip ', self.ip, ': speed:', humanfriendly.format_size(speed, binary=True))

@@ -133,17 +133,23 @@ class cf_speed(object):
 
     def load_ip_list(self):
         url = self.cfg['cloudflare']['ip_list']['url']
-        print('get ip list from ', colorama.Fore.YELLOW,
-              url, colorama.Style.RESET_ALL)
-        result = requests.get(url)
-        r = result.content.decode('utf-8')
-        self.ip_list = r.splitlines()
-        if self.cfg['cloudflare']['log']['ip_list']:
-            print(self.ip_list)
-        
+        from_file = self.cfg['cloudflare']['ip_list']['from_file']
+        if from_file is not None and from_file != '':
+            print('load from file...')
+            with open(from_file, 'r') as reader:
+                self.ip_list = reader.readlines()
+        else:
+            print('get ip list from ', colorama.Fore.YELLOW,
+                url, colorama.Style.RESET_ALL)
+            result = requests.get(url)
+            r = result.content.decode('utf-8')
+            self.ip_list = r.splitlines()
+            if self.cfg['cloudflare']['log']['ip_list']:
+                print(self.ip_list)
+            
         self.speed_list = []
         for ip in self.ip_list:
-            st = speed_test(ip)
+            st = speed_test(ip.rstrip('\n'))
             self.speed_list.append(st)
 
         max_ip = self.cfg['cloudflare']['test']['max_ip']

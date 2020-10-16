@@ -2,6 +2,7 @@
 cloudflare:
   ip_list:
     url: 'https://anycast.freecdn.workers.dev/'
+    from_file: ip_list.txt
   test:
     max_ip: -1 # -1 unlimit, use all
     ping_thread: 100

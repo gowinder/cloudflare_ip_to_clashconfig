@@ -17,17 +17,6 @@ from requests_toolbelt.adapters import host_header_ssl
 PING_MAX = 5000
 SPEED_MIN = 99999999999
 
-dns_cache = {}
-prv_getaddrinfo = socket.getaddrinfo
-def new_getaddrinfo(*args):
-    # Uncomment to see what calls to `getaddrinfo` look like.
-    # print(args)
-    try:
-        return dns_cache[args[:2]] # hostname and port
-    except KeyError:
-        return prv_getaddrinfo(*args)
-
-socket.getaddrinfo = new_getaddrinfo
 
 class speed_test(object):
     def __init__(self, ip: str):
@@ -81,10 +70,6 @@ class speed_test(object):
         url = 'https://%s%s' % (host, path)
         headers = {'HOST': host}
 
-        # from https://stackoverflow.com/a/44378047
-        key = (host, 443)
-        value = (socket.AddressFamily.AF_INET, 0, 0, '', (self.ip, 443))
-        dns_cache[key] = [value]
         try:
             response = s.get(url, headers=headers, stream = True, timeout=max_time + 1)
             content_size = int(response.headers['content-length'])

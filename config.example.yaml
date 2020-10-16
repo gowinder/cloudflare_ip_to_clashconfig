@@ -3,7 +3,7 @@ cloudflare:
   ip_list:
     url: 'https://anycast.freecdn.workers.dev/'
   test:
-    map_ip: -1
+    max_ip: -1
     ping_thread: 100
     ping_count: 3
     speed_test_count: 3

@@ -1,0 +1,114 @@
+# Copyright (c) 2018 Dreamacro
+# 接管：不支持在此页面直接修改，请到全局设置页面进行修改
+
+# port of HTTP
+port: 7890
+
+# port of SOCKS5
+socks-port: 7891
+
+# redir port for Linux and macOS
+redir-port: 7892
+
+allow-lan: true # 此项将被接管为true
+bind-address: "*"
+
+# Only applicable when setting allow-lan to true
+# "*": bind all IP addresses
+# 192.168.122.11: bind a single IPv4 address
+# "[aaaa::a8aa:ff:fe09:57d8]": bind a single IPv6 address
+
+# Rule / Global/ Direct (default is Rule)
+mode: Rule
+
+# set log level to stdout (default is info)
+# info / warning / error / debug / silent
+log-level: debug
+
+# A RESTful API for clash
+external-controller: 0.0.0.0:9090
+
+# you can put the static web resource (such as clash-dashboard) to a directory, and clash would serve in `${API}/ui`
+# input is a relative path to the configuration directory or an absolute path
+external-ui: "/usr/share/openclash/dashboard" # 此项将被接管
+
+# Secret for RESTful API (Optional)
+secret: "123456"
+
+# experimental feature
+experimental:
+ignore-resolve-fail: true # ignore dns resolve fail, default value is true
+
+# authentication of local SOCKS5/HTTP(S) server
+hosts:
+  ##Custom HOSTS##
+  #  experimental hosts, support wildcard (e.g. *.clash.dev Even *.foo.*.example.com)
+  #  static domain has a higher priority than wildcard domain (foo.example.com > *.example.com)
+  #  NOTE: hosts don't work with `fake-ip`
+  #  '*.clash.dev': 127.0.0.1
+  #  'alpha.clash.dev': '::1'
+  #- "web.thistheone.xyz": 154.3.4.129
+  #- "web2.thistheone.xyz": 38.106.22.77
+##Custom HOSTS END##
+dns: # 如订阅配置无包括此项的所有DNS设置，OpenClash将自动添加
+  enable: true
+  ipv6: false # default is false # 此项将被接管
+  listen: 127.0.0.1:7874
+  enhanced-mode: redir-host
+  #  fake-ip-filter: # fake ip white domain list
+  #  - '*.lan'
+  #  - localhost.ptlogin2.qq.com
+  nameserver:
+  #fallback:
+  #  - tls://8.8.8.8:853
+  fallback-filter:
+    geoip: true
+    ipcidr:
+      - 240.0.0.0/4
+#===================== OpenClash-General-Settings =====================#
+Proxy: # 节点设置，此部分与proxy-provider两者不能同时删除
+  - name: "vmess-template"
+    type: vmess
+    server: 0.0.0.0
+    port: 443
+    uuid: uuid
+    alterId: 32
+    cipher: auto
+    network: ws
+    ws-path: /ray
+    ws-headers:
+      Host: "web2.thistheone.xyz"
+    tls: true
+    tls-hostname: web2.thistheone.xyz,
+# Openclash 不会对下方策略组设置进行任何更改，请确保设置正确
+
+Proxy Group: # 此参数必须保留,不能删除
+  # url-test select which proxy will be used by benchmarking speed to a URL.
+  - {
+      name: "auto",
+      type: url-test,
+      proxies: [],
+      url: "http://www.gstatic.com/generate_204",
+      interval: 300,
+    }
+
+  # fallback select an available policy by priority. The availability is tested by accessing an URL, just like an auto url-test group.
+  - {
+      name: "fallback-auto",
+      type: fallback,
+      proxies: [],
+      url: "http://www.gstatic.com/generate_204",
+      interval: 300,
+    }
+
+  # load-balance: The request of the same eTLD will be dial on the same proxy.
+  - {
+      name: "load-balance",
+      type: load-balance,
+      proxies: [],
+      url: "http://www.gstatic.com/generate_204",
+      interval: 300,
+    }
+
+Rule:
+  # 如果您将一直使用第三方规则，下方可以留空。

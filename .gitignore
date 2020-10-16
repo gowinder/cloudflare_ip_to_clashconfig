@@ -151,3 +151,4 @@ cython_debug/
 .venv/
 
 config.yaml
+openclash.yaml

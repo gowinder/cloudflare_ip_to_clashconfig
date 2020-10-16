@@ -145,7 +145,7 @@ class cf_speed(object):
             st = speed_test(ip)
             self.speed_list.append(st)
 
-        self.speed_list = self.speed_list[:10]
+        # self.speed_list = self.speed_list[:10]
 
     def increase_pinged(self):
         self.pinged_mutex.acquire()

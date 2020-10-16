@@ -111,7 +111,10 @@ class speed_test(object):
                 all_t += t
                 succ_count += 1
             progress_bar.update(1)
-        self.speed_avg = total / all_t.seconds
+        if succ_count > 0 and all_t.seconds > 0:
+            self.speed_avg = total / all_t.seconds
+        else:
+            self.speed_avg = 0
         self.speed_lost_rate = (count - succ_count) / count
     
     def print_speed(self):

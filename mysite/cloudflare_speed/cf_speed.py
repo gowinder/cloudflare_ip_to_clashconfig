@@ -15,6 +15,22 @@ import socket
 from datetime import datetime, timedelta 
 from requests_toolbelt.adapters import host_header_ssl
 import humanfriendly
+import ssl
+
+class MySSLContext(ssl.SSLContext):
+    def __new__(cls, server_hostname):
+            return super(MySSLContext, cls).__new__(cls, ssl.PROTOCOL_SSLv23)
+
+    def __init__(self, server_hostname):
+            super(MySSLContext, self).__init__(ssl.PROTOCOL_SSLv23)
+            self._my_server_hostname = server_hostname
+
+    def change_server_hostname(self, server_hostname):
+            self._my_server_hostname = server_hostname
+
+    def wrap_socket(self, *args, **kwargs):
+            kwargs['server_hostname'] = self._my_server_hostname
+            return super(MySSLContext, self).wrap_socket(*args, **kwargs)
 
 PING_MAX = 5000
 SPEED_MIN = 99999999999
@@ -69,12 +85,20 @@ class speed_test(object):
 
     def download_test(self, host, path, chunk_size, max_size, max_time, log):
         s = requests.Session()
-        s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
-        url = 'https://%s%s' % (host, path)
+        # s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
+        url = 'https://%s%s' % (self.ip, path)
         headers = {'HOST': host}
+
+        adapter = requests.adapters.HTTPAdapter()
+        context = MySSLContext(host)
+        adapter.init_poolmanager(10, 10, ssl_context=context)
+        s.mount('https://', adapter)
+
         succ = True
         try:
-            response = s.get(url, headers=headers, stream = True, timeout=max_time / + 1)
+            response = s.get(url, verify=False,
+                headers=headers, stream = True,
+                timeout=max_time / + 1)
             # content_size = int(response.headers['content-length'])
             start_tick = datetime.now()
             downloaded = 0

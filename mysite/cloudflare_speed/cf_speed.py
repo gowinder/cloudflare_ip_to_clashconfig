@@ -317,7 +317,9 @@ def test():
         file = os.path.join(pathlib.Path(__file__).parent.absolute(), '../../openclash.yaml')
         with open(file, 'w+', encoding='utf-8') as writer:
             #yaml.dump(clash, writer, indent=4, mapping=2, sequence=4)
-            YAML.dump(clash, writer, indent=4, mapping=2, sequence=4)
+            yaml = YAML()
+            yaml.indent(mapping=2, sequence=4, offset=2)
+            yaml.dump(clash, writer)
         
     print('done!')
 

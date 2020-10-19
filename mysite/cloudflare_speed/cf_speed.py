@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 from requests_toolbelt.adapters import host_header_ssl
 import humanfriendly
 import ssl
+from ruamel.yaml import YAML
 
 class MySSLContext(ssl.SSLContext):
     def __new__(cls, server_hostname):
@@ -315,7 +316,8 @@ def test():
         clash = sp.generate_openclash_config(template)
         file = os.path.join(pathlib.Path(__file__).parent.absolute(), '../../openclash.yaml')
         with open(file, 'w+', encoding='utf-8') as writer:
-            yaml.dump(clash, writer, indent=4)
+            #yaml.dump(clash, writer, indent=4, mapping=2, sequence=4)
+            YAML.dump(clash, writer, indent=4, mapping=2, sequence=4)
         
     print('done!')
 

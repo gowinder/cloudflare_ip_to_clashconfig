@@ -315,7 +315,7 @@ def test():
         clash = sp.generate_openclash_config(template)
         file = os.path.join(pathlib.Path(__file__).parent.absolute(), '../../openclash.yaml')
         with open(file, 'w+', encoding='utf-8') as writer:
-            yaml.dump(clash, writer)
+            yaml.dump(clash, writer, indent=4)
         
     print('done!')
 

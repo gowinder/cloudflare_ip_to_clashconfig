@@ -148,3 +148,7 @@ cython_debug/
 .history/
 
 .vscode/
+.venv/
+
+config.yaml
+openclash.yaml

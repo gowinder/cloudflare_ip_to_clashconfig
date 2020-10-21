@@ -92,8 +92,9 @@ class JobSetting(models.Model):
         return stream.getValue()
 
 class JobEnv(models.Model):
-    number = models.IntegerField()
-    curent_job = models.IntegerField()
+    number = models.IntegerField(default=0)
+    curent_job = models.IntegerField(default=-1)
+    activate_job_setting = models.IntegerField(default=-1)
 
 class JobRecord(models.Model):
     number = models.IntegerField()

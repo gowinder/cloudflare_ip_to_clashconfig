@@ -1,0 +1,26 @@
+{
+  "config": {
+    "commitizen": {
+      "path": "C:\\ProgramData\\nvm\\v8.11.3\\node_modules\\cz-conventional-changelog"
+    }
+  },
+  "name": "cloudflare_ip_to_clash_config",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "release": "standard-version",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gowinder/cloudflare_ip_to_clashconfig.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gowinder/cloudflare_ip_to_clashconfig/issues"
+  },
+  "homepage": "https://github.com/gowinder/cloudflare_ip_to_clashconfig#readme"
+}

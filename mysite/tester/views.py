@@ -2,7 +2,7 @@ from django.db.models.fields import reverse_related
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404
 
-from .models import JobSetting, JobRecord
+from .models import JobSetting, JobRecord, JobEnv
 
 from django.views.generic import(
     CreateView, DetailView, DeleteView, ListView, UpdateView
@@ -13,6 +13,7 @@ def home(request):
     context = {
         'settings': JobSetting.objects.all(),
         'job_records': JobRecord.objects.all(),
+        'job_env': JobEnv.objects.first(),
         'title': 'job settings'
     }
     return render(request, 'tester/home.html', context=context)
@@ -23,6 +24,14 @@ def duplicate_job_setting(request, pk):
         js.pk = None
         js.alias = js.alias + ' copy'
         js.save()
+    return home(request)
+
+def activate_job_setting(request, pk):
+    js = JobSetting.objects.get(pk=pk)
+    if js is not None:
+        env = JobEnv.objects.first()
+        env.activate_job_setting = pk
+        env.save()
     return home(request)
 
 class JobSettingDetailView(DetailView):

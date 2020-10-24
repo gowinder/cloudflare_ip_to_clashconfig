@@ -43,7 +43,7 @@ class JobSetting(models.Model):
     def get_absolute_url(self):
         return reverse('job_setting', kwargs={'pk': self.pk})
 
-    def get_yaml(self):
+    def get_dict(self):
         d = {}
         ip_list = {}
         ip_list['url'] = self.cf_ip_list_url
@@ -84,20 +84,29 @@ class JobSetting(models.Model):
         oc['host'] = self.oc_host
         oc['alterId'] = self.oc_alert_id 
         d['openclash'] = oc
-        
+        return d
+
+    def get_yaml(self):                
         yaml_dump = YAML()
         yaml_dump.indent(mapping=2, sequence=4, offset=2)
         stream = StringIO()
-        yaml_dump.dump(d, stream)
+        yaml_dump.dump(self.get_dict(), stream)
         return stream.getValue()
 
 class JobEnv(models.Model):
     number = models.IntegerField(default=0)
     curent_job = models.IntegerField(default=-1)
     activate_job_setting = models.IntegerField(default=-1)
+    activate_open_clash_template = models.IntegerField(default=-1)
 
 class JobRecord(models.Model):
     number = models.IntegerField()
-    time = models.DateTimeField()
+    time = models.DateTimeField(default=timezone.now)
     status = models.IntegerField()
     log = models.TextField()
+
+
+class OpenclashTemplate(models.Model):
+    alias = models.CharField(max_length=50)
+    template = models.TextField(default='')
+    update_time = models.DateTimeField(default=timezone.now)

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
+    'django_extensions',
+    'django_rq',
 ]
 
 MIDDLEWARE = [
@@ -121,6 +124,27 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
+MEDIA_URL= "/media/"
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-TIME_ZONE = 'Asian/Beijin'
+TIME_ZONE = 'Asia/Shanghai'
+
+# django setting.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    }
+}
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': os.environ.get('RQ_REDIS_HOST', 'redis:6379'),
+        'PORT': int(os.environ.get('RQ_REDIS_PORT', '6379')),
+        'DB': int(os.environ.get('RQ_REDIS_DB', '0')),
+        'PASSWORD': os.environ.get('RQ_REDIS_PASSWORD', ''),
+        'DEFAULT_TIMEOUT': 360,
+    },
+}

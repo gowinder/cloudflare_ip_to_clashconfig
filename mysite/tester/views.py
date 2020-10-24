@@ -9,6 +9,9 @@ from django.views.generic import(
     DeleteView, ListView, UpdateView
     )
 
+import django_rq
+from .tasks import tester_task
+
 
 def home(request):
     context = {
@@ -132,10 +135,13 @@ class OpenclashTemplateUpdateView(UserPassesTestMixin, UpdateView):
         post = self.get_object()
         return True
 
-
-
 class OpenclashTemplateDeleteView(DeleteView):
     model = OpenclashTemplate
     template_name = 'tester/openclash_template_delete.html'
 
     success_url = '/openclash_templates/'
+
+def start_tester_task(request, job_setting_id, template_id):
+    django_rq.enqueue(tester_task, job_setting_id, template_id)
+
+    return home(request)

@@ -141,10 +141,12 @@ CACHES = {
 
 RQ_QUEUES = {
     'default': {
-        'HOST': os.environ.get('RQ_REDIS_HOST', 'redis:6379'),
+        'HOST': os.environ.get('RQ_REDIS_HOST', '127.0.0.1'),
         'PORT': int(os.environ.get('RQ_REDIS_PORT', '6379')),
         'DB': int(os.environ.get('RQ_REDIS_DB', '0')),
         'PASSWORD': os.environ.get('RQ_REDIS_PASSWORD', ''),
-        'DEFAULT_TIMEOUT': 360,
+        'DEFAULT_TIMEOUT': 720,
     },
 }
+
+RQ_SHOW_ADMIN_LINK = True

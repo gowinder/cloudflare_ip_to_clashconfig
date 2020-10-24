@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from .views import *
 
@@ -17,5 +17,6 @@ urlpatterns = [
     path('openclash_template/<int:pk>/delete/', OpenclashTemplateDeleteView.as_view(), name='openclash-template-delete'),
     path('openclash_template/<int:pk>/activate/', views.activate_openclash_template, name='openclash-template-activate'),
     
-
+    path('django-rq/', include('django_rq.urls')),
+    path('start_tester_task/<int:job_setting_id>/<int:template_id>/', views.start_tester_task, name='start-tester-task')
 ]

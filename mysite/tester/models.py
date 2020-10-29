@@ -17,7 +17,7 @@ class JobSetting(models.Model):
     ping_count = models.IntegerField(default=3)
     speed_test_count = models.IntegerField(default=3)
     speed_host = models.CharField(default='speed.cloudflare.com', max_length=255)
-    speed_url = models.CharField(default='/__down?bytes=1000000000', max_length=255)
+    speed_path = models.CharField(default='/__down?bytes=1000000000', max_length=255)
     download_chunk = models.IntegerField(default=1024)
     download_size = models.IntegerField(default=10485760)
     download_time = models.IntegerField(default=10)
@@ -34,7 +34,7 @@ class JobSetting(models.Model):
     oc_use_ip = models.IntegerField(default=3)
     oc_uuid = models.UUIDField(default=uuid.uuid4)
     oc_ws_path = models.CharField(max_length=255)
-    oc_host = models.CharField(max_length=16)
+    oc_host = models.CharField(max_length=255)
     oc_alert_id = models.IntegerField(default=3)
 
     def __str__(self):
@@ -56,7 +56,7 @@ class JobSetting(models.Model):
         test['ping_count'] = self.ping_count
         test['speed_test_count'] = self.speed_test_count
         test['host'] = self.speed_host
-        test['url'] = self.speed_url
+        test['path'] = self.speed_path
         test['download_chunk'] = self.download_chunk
         test['download_size'] = self.download_size
         test['download_time'] = self.download_time

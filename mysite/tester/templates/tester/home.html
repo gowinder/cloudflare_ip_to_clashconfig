@@ -1,10 +1,12 @@
 {% extends "tester/base.html" %}
 {% block content %}
+{% if job_env.activate_job_setting != -1 and job_env.activate_open_clash_template != -1 %}
 <a class="btn btn-primary" data-toggle="tooltip" 
   data-placement="top" title="Tooltip on top"
   href="{% url 'start-tester-task' job_env.activate_job_setting job_env.activate_open_clash_template %}">
   Start new tester task
 </a>
+{% endif %}
 {% for setting in settings %}
 <article class="media content-section">
   <div class="media-body">

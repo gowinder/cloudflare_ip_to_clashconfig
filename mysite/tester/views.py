@@ -57,7 +57,7 @@ class JobSettingCreateView(CreateView):
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse_related('')
+        return reverse_related('/')
 
 
 class JobSettingUpdateView(UserPassesTestMixin, UpdateView):

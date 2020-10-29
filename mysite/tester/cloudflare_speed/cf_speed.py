@@ -158,6 +158,8 @@ class cf_speed(object):
     def load_config(self, data):
         self.cfg = yaml.load(data, Loader=yaml.Loader)
 
+    def load_config_from_dict(self, d:dict):
+        self.cfg = d
 
     def load_ip_list(self):
         url = self.cfg['cloudflare']['ip_list']['url']

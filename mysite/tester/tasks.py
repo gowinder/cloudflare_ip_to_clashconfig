@@ -17,8 +17,8 @@ def tester_task(job_setting_id:int, template_id:int):
         return(1, 'Openclash template is not valid')
     
     sp = cf_speed()
-    sp.load_config(setting_dict)
+    sp.load_config_from_dict(setting_dict)
     sp.load_ip_list()
-    sp.pint()
+    sp.ping()
     sp.speed_test()
 

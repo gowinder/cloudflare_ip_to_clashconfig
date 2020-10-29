@@ -1,6 +1,9 @@
 from django_rq import job
 from .models import JobSetting, OpenclashTemplate
 from .cloudflare_speed.cf_speed import cf_speed
+from django.conf import settings as djangoSettings
+from ruamel.yaml import YAML
+import yaml
 
 @job
 def tester_task(job_setting_id:int, template_id:int):
@@ -15,10 +18,19 @@ def tester_task(job_setting_id:int, template_id:int):
     tp:OpenclashTemplate = OpenclashTemplate.objects.get(pk=template_id)
     if tp is None:
         return(1, 'Openclash template is not valid')
+    template = yaml.load(tp.template, Loader=yaml.Loader)
     
     sp = cf_speed()
     sp.load_config_from_dict(setting_dict)
     sp.load_ip_list()
     sp.ping()
     sp.speed_test()
+    clash = sp.generate_openclash_config(template)
+    print('clash=', clash)
+    file = djangoSettings.MEDIA_ROOT + 'openclash_generated.yaml'
+    with open(file, 'w+', encoding='utf-8') as writer:
+        #yaml.dump(clash, writer, indent=4, mapping=2, sequence=4)
+        yaml_dump = YAML()
+        yaml_dump.indent(mapping=2, sequence=4, offset=2)
+        yaml_dump.dump(clash, writer)
 

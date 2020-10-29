@@ -118,6 +118,9 @@ USE_L10N = True
 
 USE_TZ = True
 
+allowed_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
+if allowed_hosts != '':
+    ALLOWED_HOSTS = allowed_hosts.split(',')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -150,3 +153,5 @@ RQ_QUEUES = {
 }
 
 RQ_SHOW_ADMIN_LINK = True
+
+RQ_API_TOKEN = os.environ.get('RQ_API_TOKEN', 'b1946ac92492d2347c6235b4d2611184')

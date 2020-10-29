@@ -32,7 +32,7 @@ class JobSetting(models.Model):
 
     oc_dns = models.CharField(default='114.114.114.114', max_length=16)
     oc_use_ip = models.IntegerField(default=3)
-    oc_uuid = models.UUIDField(default=uuid.uuid4)
+    oc_uuid = models.CharField(max_length=128)
     oc_ws_path = models.CharField(max_length=255)
     oc_host = models.CharField(max_length=255)
     oc_alert_id = models.IntegerField(default=3)

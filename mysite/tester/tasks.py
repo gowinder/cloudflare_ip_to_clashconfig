@@ -32,5 +32,6 @@ def tester_task(job_setting_id:int, template_id:int):
         #yaml.dump(clash, writer, indent=4, mapping=2, sequence=4)
         yaml_dump = YAML()
         yaml_dump.indent(mapping=2, sequence=4, offset=2)
+        yaml_dump.compact(seq_seq=True)
         yaml_dump.dump(clash, writer)
 

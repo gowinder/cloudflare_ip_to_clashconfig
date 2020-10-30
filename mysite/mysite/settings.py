@@ -148,7 +148,7 @@ RQ_QUEUES = {
         'PORT': int(os.environ.get('RQ_REDIS_PORT', '6379')),
         'DB': int(os.environ.get('RQ_REDIS_DB', '0')),
         'PASSWORD': os.environ.get('RQ_REDIS_PASSWORD', ''),
-        'DEFAULT_TIMEOUT': 720,
+        'DEFAULT_TIMEOUT': 1800,
     },
 }
 

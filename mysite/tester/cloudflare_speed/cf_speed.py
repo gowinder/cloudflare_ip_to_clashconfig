@@ -17,6 +17,7 @@ from requests_toolbelt.adapters import host_header_ssl
 import humanfriendly
 import ssl
 from ruamel.yaml import YAML
+import ruamel
 
 class MySSLContext(ssl.SSLContext):
     def __new__(cls, server_hostname):
@@ -65,7 +66,9 @@ class speed_test(object):
             try:
                 p = 0.0
                 if log:
+                    print('ping', self.ip)
                     p = ping3.verbose_ping(self.ip)
+                    print('ping result', self.ip)
                 else:
                     p = ping3.ping(self.ip)
                 p *= 1000  # get as ms
@@ -74,7 +77,9 @@ class speed_test(object):
                 #if self.ping_min == PING_MAX:
                 self.ping_min = min(p, self.ping_min)
                 all_time += p
-            except:
+            except Exception as ex:
+                if log:
+                    print('ping except: ', ex)
                 lost += 1
         if lost == count:
             self.ping_failed()
@@ -259,6 +264,8 @@ class open_clash(object):
         self.clash_cfg = clash_cfg
     
     def generate_config(self, use_ip:int):
+        # proxy_names = ruamel.yaml.comments.CommentedSeq()
+        # proxy_names.fa.set_flow_style()
         proxy_names = []
         clash = copy.deepcopy(self.template)
         proxies = clash['Proxy']
@@ -287,7 +294,8 @@ class open_clash(object):
         fallback = proxy_names[0]
         gp = clash['Proxy Group']
         for p in gp:
-            p['proxies'] = []
+            p['proxies'] = ruamel.yaml.comments.CommentedSeq()
+            p['proxies'].fa.set_flow_style()
             if p['name'] == 'auto':
                 p['proxies'].append('DIRECT')
                 p['proxies'].append(fallback)

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,12 +32,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "tester.apps.TesterConfig",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
+    'django_extensions',
+    'django_rq',
 ]
 
 MIDDLEWARE = [
@@ -113,8 +118,40 @@ USE_L10N = True
 
 USE_TZ = True
 
+allowed_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
+if allowed_hosts != '':
+    ALLOWED_HOSTS = allowed_hosts.split(',')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
+MEDIA_URL= "/media/"
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+TIME_ZONE = 'Asia/Shanghai'
+
+# django setting.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    }
+}
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': os.environ.get('RQ_REDIS_HOST', '127.0.0.1'),
+        'PORT': int(os.environ.get('RQ_REDIS_PORT', '6379')),
+        'DB': int(os.environ.get('RQ_REDIS_DB', '0')),
+        'PASSWORD': os.environ.get('RQ_REDIS_PASSWORD', ''),
+        'DEFAULT_TIMEOUT': 1800,
+    },
+}
+
+RQ_SHOW_ADMIN_LINK = True
+
+RQ_API_TOKEN = os.environ.get('RQ_API_TOKEN', 'b1946ac92492d2347c6235b4d2611184')

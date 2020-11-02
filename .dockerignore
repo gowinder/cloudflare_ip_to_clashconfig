@@ -1,0 +1,5 @@
+.venv/
+.vscode/
+.git/
+mysite/db.sqlite3
+mysite/media/*

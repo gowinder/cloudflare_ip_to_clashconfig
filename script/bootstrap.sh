@@ -4,6 +4,8 @@
 #rm -rf /opt/cloud/mysite/tester/migrations/*
 #echo "make migrations..."
 #python3 /opt/cloud/mysite/manage.py makemigrations
+echo "mkdir media"
+mkdir /opt/cloud/mysite/media
 echo "migrate..."
 python3 /opt/cloud/mysite/manage.py migrate
 echo "loaddata job..."

@@ -1,6 +1,0 @@
-- model: tester.JobEnv
-  pk: 1
-  fields:
-    number: 0
-    curent_job: -1
-    activate_job_setting: -1

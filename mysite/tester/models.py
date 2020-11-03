@@ -4,6 +4,7 @@ from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
 from django.urls import reverse
 import uuid
+from datetime import datetime
 
 # Create your models here.
 class JobSetting(models.Model):
@@ -110,3 +111,8 @@ class OpenclashTemplate(models.Model):
     alias = models.CharField(max_length=50)
     template = models.TextField(default='')
     update_time = models.DateTimeField(default=timezone.now)
+
+
+class SchedulerSetting(models.Model):
+    scheduler_time = models.TimeField(default=datetime.utcnow())
+    interval = models.IntegerField(default=3600)

@@ -1,0 +1,12 @@
+- model: tester.JobEnv
+  pk: 1
+  fields:
+    number: 0
+    curent_job: -1
+    activate_job_setting: -1
+
+- model: tester.SchedulerSetting
+    pk: 1
+    fields:
+      scheduler_time: '12:00:00'
+      interval: 1800

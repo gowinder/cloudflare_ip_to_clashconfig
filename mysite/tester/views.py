@@ -2,7 +2,7 @@ from django.db.models.fields import reverse_related
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404
 
-from .models import JobSetting, JobRecord, JobEnv, OpenclashTemplate
+from .models import JobSetting, JobRecord, JobEnv, OpenclashTemplate, SchedulerSetting
 
 from django.views.generic import(
     CreateView, DetailView, 
@@ -11,7 +11,7 @@ from django.views.generic import(
 
 import django_rq
 from .tasks import tester_task
-
+from .scheduler import start_scheduler
 
 def home(request):
     context = {
@@ -145,3 +145,18 @@ def start_tester_task(request, job_setting_id, template_id):
     django_rq.enqueue(tester_task, job_setting_id, template_id)
 
     return home(request)
+
+class SchedulerSettingUpdateView(UserPassesTestMixin, UpdateView):
+    model = SchedulerSetting
+    fields = '__all__'
+    template_name = 'tester/scheduler_setting_form.html'
+    success_url = '/'
+    def form_valid(self, form):
+        #form.instance.author = self.request.user
+
+        start_scheduler()
+        return super().form_valid(form)
+    
+    def test_func(self):
+        post = self.get_object()
+        return True

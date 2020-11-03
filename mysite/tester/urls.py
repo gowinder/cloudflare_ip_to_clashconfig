@@ -18,5 +18,7 @@ urlpatterns = [
     path('openclash_template/<int:pk>/activate/', views.activate_openclash_template, name='openclash-template-activate'),
     
     path('django-rq/', include('django_rq.urls')),
-    path('start_tester_task/<int:job_setting_id>/<int:template_id>/', views.start_tester_task, name='start-tester-task')
+    path('start_tester_task/<int:job_setting_id>/<int:template_id>/', views.start_tester_task, name='start-tester-task'),
+
+    path('scheduler_setting/<int:pk>/', SchedulerSettingUpdateView.as_view(), name='job-scheduler-setting'),
 ]

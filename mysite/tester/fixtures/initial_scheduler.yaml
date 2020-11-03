@@ -1,0 +1,5 @@
+- model: tester.SchedulerSetting
+  pk: 1
+  fields:
+    scheduler_time: '12:00:00'
+    interval: 1800

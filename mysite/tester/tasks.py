@@ -1,9 +1,10 @@
 from django_rq import job
-from .models import JobSetting, OpenclashTemplate
+from .models import JobSetting, OpenclashTemplate, JobEnv, SchedulerSetting
 from .cloudflare_speed.cf_speed import cf_speed
 from django.conf import settings as djangoSettings
 from ruamel.yaml import YAML
 import yaml
+import django_rq
 
 @job
 def tester_task(job_setting_id:int, template_id:int):

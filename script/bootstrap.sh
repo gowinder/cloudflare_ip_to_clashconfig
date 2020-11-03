@@ -1,5 +1,9 @@
 #!sh
 
+#echo "rm old migrations..."
+#rm -rf /opt/cloud/mysite/tester/migrations/*
+#echo "make migrations..."
+#python3 /opt/cloud/mysite/manage.py makemigrations
 echo "migrate..."
 python3 /opt/cloud/mysite/manage.py migrate
 echo "loaddata job..."

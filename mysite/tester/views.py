@@ -51,13 +51,14 @@ class JobSettingCreateView(CreateView):
     model = JobSetting
     fields = '__all__'
     template_name = 'tester/job_setting_form.html'
+    success_url = '/'
 
     def form_valid(self, form):
         #form.instance.author = self.request.user
         return super().form_valid(form)
     
-    def get_success_url(self):
-        return reverse_related('/')
+    # def get_success_url(self):
+    #     return reverse_related('/')
 
 
 class JobSettingUpdateView(UserPassesTestMixin, UpdateView):

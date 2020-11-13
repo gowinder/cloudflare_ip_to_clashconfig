@@ -278,15 +278,15 @@ class open_clash(object):
             for i in range(use_ip):
                 st:speed_test = self.speed_list[i]
                 new_proxy = copy.deepcopy(proxy_template)
-                name = 'vmess-cf-ip-%d' % i
+                name = 'vmess-cf-ip-%s-%d' % (v2ray['alias'], i)
                 proxy_names.append(name)
                 new_proxy['name'] = name
                 new_proxy['server'] = st.ip
-                new_proxy['uuid'] = self.clash_cfg['uuid']
-                new_proxy['alterId'] = self.clash_cfg['alterId']
-                new_proxy['ws-path'] = self.clash_cfg['ws-path']
-                new_proxy['ws-headers']['Host'] = self.clash_cfg['host']
-                new_proxy['tls-hostname'] = self.clash_cfg['host']
+                new_proxy['uuid'] = v2ray['uuid']
+                new_proxy['alterId'] = v2ray['alterId']
+                new_proxy['ws-path'] = v2ray['ws-path']
+                new_proxy['ws-headers']['Host'] = v2ray['host']
+                new_proxy['tls-hostname'] = v2ray['host']
                 clash['Proxy'].append(new_proxy)
         
         clash['dns']['nameserver'] = []
@@ -306,6 +306,15 @@ class open_clash(object):
         
         return clash
 
+class util():
+    @staticmethod
+    def openclash_to_yaml(oc:open_clash, filename):
+        file = os.path.join(pathlib.Path(__file__).parent.absolute(), filename)
+        with open(file, 'w+', encoding='utf-8') as writer:
+            #yaml.dump(clash, writer, indent=4, mapping=2, sequence=4)
+            yaml_dump = YAML()
+            yaml_dump.indent(mapping=2, sequence=4, offset=2)
+            yaml_dump.dump(oc, writer)
 
 def test():
     sp = cf_speed()

@@ -6,6 +6,7 @@ from django.urls import reverse
 import uuid
 from datetime import datetime
 
+
 # Create your models here.
 class JobSetting(models.Model):
     alias = models.CharField(max_length=50)
@@ -33,10 +34,6 @@ class JobSetting(models.Model):
 
     oc_dns = models.CharField(default='114.114.114.114', max_length=16)
     oc_use_ip = models.IntegerField(default=3)
-    oc_uuid = models.CharField(max_length=128)
-    oc_ws_path = models.CharField(max_length=255)
-    oc_host = models.CharField(max_length=255)
-    oc_alert_id = models.IntegerField(default=3)
 
     def __str__(self):
         return self.alias
@@ -93,6 +90,16 @@ class JobSetting(models.Model):
         stream = StringIO()
         yaml_dump.dump(self.get_dict(), stream)
         return stream.getValue()
+
+class V2RayConfig(models.Model):
+    job_setting = models.ForeignKey(JobSetting, on_delete=models.CASCADE)
+    
+    alias = models.CharField(max_length=255)
+    uuid = models.CharField(max_length=128)
+    ws_path = models.CharField(max_length=255)
+    host = models.CharField(max_length=255)
+    alert_id = models.IntegerField(default=3)
+
 
 class JobEnv(models.Model):
     number = models.IntegerField(default=0)

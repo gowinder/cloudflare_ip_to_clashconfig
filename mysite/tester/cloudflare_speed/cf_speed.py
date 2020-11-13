@@ -258,10 +258,11 @@ class cf_speed(object):
         return clash.generate_config(self.cfg['openclash']['use_ip'])        
 
 class open_clash(object):
-    def __init__(self, template, speed_list:list, clash_cfg):
+    def __init__(self, template, speed_list:list, clash_cfg, v2ray_list):
         self.template = template
         self.speed_list = speed_list
         self.clash_cfg = clash_cfg
+        self.v2ray_list = v2ray_list
     
     def generate_config(self, use_ip:int):
         # proxy_names = ruamel.yaml.comments.CommentedSeq()
@@ -273,19 +274,20 @@ class open_clash(object):
         assert(proxies[0]['name'] == 'vmess-template')
         proxy_template = copy.deepcopy(proxies[0])
         clash['Proxy'] = []
-        for i in range(use_ip):
-            st:speed_test = self.speed_list[i]
-            new_proxy = copy.deepcopy(proxy_template)
-            name = 'vmess-cf-ip-%d' % i
-            proxy_names.append(name)
-            new_proxy['name'] = name
-            new_proxy['server'] = st.ip
-            new_proxy['uuid'] = self.clash_cfg['uuid']
-            new_proxy['alterId'] = self.clash_cfg['alterId']
-            new_proxy['ws-path'] = self.clash_cfg['ws-path']
-            new_proxy['ws-headers']['Host'] = self.clash_cfg['host']
-            new_proxy['tls-hostname'] = self.clash_cfg['host']
-            clash['Proxy'].append(new_proxy)
+        for v2ray in self.v2ray_list:
+            for i in range(use_ip):
+                st:speed_test = self.speed_list[i]
+                new_proxy = copy.deepcopy(proxy_template)
+                name = 'vmess-cf-ip-%d' % i
+                proxy_names.append(name)
+                new_proxy['name'] = name
+                new_proxy['server'] = st.ip
+                new_proxy['uuid'] = self.clash_cfg['uuid']
+                new_proxy['alterId'] = self.clash_cfg['alterId']
+                new_proxy['ws-path'] = self.clash_cfg['ws-path']
+                new_proxy['ws-headers']['Host'] = self.clash_cfg['host']
+                new_proxy['tls-hostname'] = self.clash_cfg['host']
+                clash['Proxy'].append(new_proxy)
         
         clash['dns']['nameserver'] = []
         clash['dns']['nameserver'].append(self.clash_cfg['dns'])
@@ -296,12 +298,9 @@ class open_clash(object):
         for p in gp:
             p['proxies'] = ruamel.yaml.comments.CommentedSeq()
             p['proxies'].fa.set_flow_style()
-            if p['name'] == 'auto':
+            if p['name'] == 'fallback-auto':
                 p['proxies'].append('DIRECT')
-                p['proxies'].append(fallback)
-            elif p['name'] == 'fallback-auto':
-                p['proxies'].append('DIRECT')
-            elif p['name'] == 'load-balance':
+            elif p['name'] == 'load-balance' or p['name'] == 'auto':
                 for name in proxy_names:
                     p['proxies'].append(name)
         

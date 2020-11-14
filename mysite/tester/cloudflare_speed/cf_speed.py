@@ -317,6 +317,13 @@ class util():
             yaml_dump = YAML()
             yaml_dump.indent(mapping=2, sequence=4, offset=2)
             yaml_dump.dump(oc, writer)
+            
+    @staticmethod
+    def load_yaml_file(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            d = f.read()
+            return yaml.load(d, Loader=yaml.Loader)
+        return None
 
 def test():
     sp = cf_speed()

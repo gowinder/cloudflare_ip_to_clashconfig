@@ -10,6 +10,12 @@ from .tasks import run_task
 from django.conf import settings
 from mysite.settings import BASE_DIR
 from django.core.management import call_command
+from django.conf import settings as djangoSettings
+from .cloudflare_speed.cf_speed import util
+
+
+USE_IP = 3
+USE_V2RAY = 3
 
 @pytest.fixture(scope='session')
 def django_db_setup(django_db_setup, django_db_blocker):
@@ -19,7 +25,7 @@ def django_db_setup(django_db_setup, django_db_blocker):
             JobSetting.objects.all().delete()
             JobSetting.objects.create(
                alias=job_setting_alias,
-               oc_use_ip=10)
+               oc_use_ip=USE_IP)
 
             assert JobSetting.objects.count() == 1
             assert JobSetting.objects.first().alias == job_setting_alias
@@ -81,3 +87,12 @@ def test_tasks():
     code, msg = run_task(job_setting_id, template_id)
     assert code == 0
     assert msg == 'success'
+    file = djangoSettings.MEDIA_ROOT + 'openclash_generated.yaml'
+    data = util.load_yaml_file(file)
+    assert data != None
+    proxy_group = data['Proxy Group']
+    assert proxy_group != None
+    assert len(proxy_group) > 0
+    auto = proxy_group[0]
+    assert auto['proxies'] != None
+    assert len(auto['proxies']) == USE_IP * USE_V2RAY

@@ -35,6 +35,9 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: make test output dir
       run: mkdir -p mysite/tester/cloudflare_speed/test
+    - name: evn
+      run: |
+        export DJANGO_SETTINGS_MODULE=mysite.settings
     - name: Test with pytest
       run: |
         pytest --create-db --migrations

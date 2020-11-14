@@ -10,6 +10,8 @@ class util():
     @staticmethod
     def openclash_to_yaml(oc:open_clash, filename):
         file = os.path.join(pathlib.Path(__file__).parent.absolute(), filename)
+        parent_path = pathlib.Path(file).parent.absolute()
+        util.mkdir(parent_path)
         with open(file, 'w+', encoding='utf-8') as writer:
             #yaml.dump(clash, writer, indent=4, mapping=2, sequence=4)
             yaml_dump = YAML()
@@ -37,3 +39,7 @@ class util():
                 for ip_addr in ip_range:
                     new_list.append(str(ip_addr))
         return new_list
+
+    @staticmethod
+    def mkdir(path):
+        pathlib.Path(path).mkdir(parents=True, exist_ok=True)

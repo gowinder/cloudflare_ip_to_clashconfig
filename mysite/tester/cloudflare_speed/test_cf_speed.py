@@ -3,6 +3,7 @@ import os
 import pathlib
 import yaml
 from .cf_speed import speed_test, open_clash, util
+from ..models import V2RayConfig
 
 
 def get_open_clash_template():
@@ -14,21 +15,21 @@ def get_open_clash_template():
 
 def get_v2ray_list():
     return [
-        {'alias': 'v1',
-        'uuid': 'test-uuid-1',
-        'alterId': '1',
-        'ws-path': '/test_path_1/',
-        'host': 'test_host_1'},
-        {'alias': 'v2',
-        'uuid': 'test-uuid-2',
-        'alterId': '2',
-        'ws-path': '/test_path_2/',
-        'host': 'test_host_2'},
-        {'alias': 'v3',
-        'uuid': 'test-uuid-3',
-        'alterId': '3',
-        'ws-path': '/test_path_3/',
-        'host': 'test_host_3'}
+        V2RayConfig(alias='v1',
+        uuid='test-uuid-1',
+        alter_id=1,
+        ws_path='/test_path_1/',
+        host='test_host_1'),
+        V2RayConfig(alias='v2',
+        uuid='test-uuid-2',
+        alter_id=2,
+        ws_path='/test_path_2/',
+        host='test_host_2'),
+        V2RayConfig(alias='v3',
+        uuid='test-uuid-3',
+        alter_id=3,
+        ws_path='/test_path_3/',
+        host='test_host_3'),
     ]
 
 def test_generate_config():

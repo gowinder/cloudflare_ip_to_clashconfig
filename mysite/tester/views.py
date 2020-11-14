@@ -13,7 +13,7 @@ from django.views.generic import(
     )
 
 import django_rq
-from .tasks import tester_task
+from .tasks import run_task
 from .scheduler import start_scheduler
 
 def home(request):
@@ -52,7 +52,7 @@ class JobSettingDetailView(DetailView):
 
 from django.forms.models import inlineformset_factory
 V2rayFormset = inlineformset_factory(
-    JobSetting, V2RayConfig, fields=('alias', 'uuid', 'ws_path', 'host', 'alert_id')
+    JobSetting, V2RayConfig, fields=('alias', 'uuid', 'ws_path', 'host', 'alter_id')
 )
 
 class JobSettingCreateView(CreateView):
@@ -167,7 +167,7 @@ class OpenclashTemplateDeleteView(DeleteView):
     success_url = '/openclash_templates/'
 
 def start_tester_task(request, job_setting_id, template_id):
-    django_rq.enqueue(tester_task, job_setting_id, template_id)
+    django_rq.enqueue(run_task, job_setting_id, template_id)
 
     return home(request)
 

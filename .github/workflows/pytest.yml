@@ -5,7 +5,7 @@ name: Python package
 
 on:
   push:
-    branches: [ $default-branch, feature/multiple ]
+    branches: [ $default-branch, feature/* ]
   pull_request:
     branches: [ $default-branch ]
 
@@ -37,4 +37,4 @@ jobs:
       run: mkdir -p mysite/tester/cloudflare_speed/test
     - name: Test with pytest
       run: |
-        pytest
+        pytest --create-db --migrations

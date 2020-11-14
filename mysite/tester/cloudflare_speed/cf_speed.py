@@ -159,6 +159,7 @@ class cf_speed(object):
         self.speed_list = []
         self.pinged_count = 0
         self.pinged_mutex = threading.Lock()
+        self.v2ray_list = []
 
     def load_config(self, data):
         self.cfg = yaml.load(data, Loader=yaml.Loader)
@@ -253,7 +254,7 @@ class cf_speed(object):
 
     def generate_openclash_config(self, template):
         print(' generate open clash config file')
-        clash = open_clash(template, self.speed_list, self.cfg['openclash'])
+        clash = open_clash(template, self.speed_list, self.cfg['openclash'], self.v2ray_list)
 
         return clash.generate_config(self.cfg['openclash']['use_ip'])        
 
@@ -275,18 +276,19 @@ class open_clash(object):
         proxy_template = copy.deepcopy(proxies[0])
         clash['Proxy'] = []
         for v2ray in self.v2ray_list:
+            print(v2ray)
             for i in range(use_ip):
                 st:speed_test = self.speed_list[i]
                 new_proxy = copy.deepcopy(proxy_template)
-                name = 'vmess-cf-ip-%s-%d' % (v2ray['alias'], i)
+                name = 'vmess-cf-ip-%s-%d' % (v2ray.alias, i)
                 proxy_names.append(name)
                 new_proxy['name'] = name
                 new_proxy['server'] = st.ip
-                new_proxy['uuid'] = v2ray['uuid']
-                new_proxy['alterId'] = v2ray['alterId']
-                new_proxy['ws-path'] = v2ray['ws-path']
-                new_proxy['ws-headers']['Host'] = v2ray['host']
-                new_proxy['tls-hostname'] = v2ray['host']
+                new_proxy['uuid'] = v2ray.uuid
+                new_proxy['alterId'] = v2ray.alter_id
+                new_proxy['ws-path'] = v2ray.ws_path
+                new_proxy['ws-headers']['Host'] = v2ray.host
+                new_proxy['tls-hostname'] = v2ray.host
                 clash['Proxy'].append(new_proxy)
         
         clash['dns']['nameserver'] = []

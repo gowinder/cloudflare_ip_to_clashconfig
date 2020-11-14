@@ -12,8 +12,8 @@ class JobSetting(models.Model):
     alias = models.CharField(max_length=50)
     update_time = models.DateTimeField(default=timezone.now)
 
-    cf_ip_list_url = models.CharField(max_length=255)
-    cf_ip_list_from_file = models.CharField(max_length=255, blank=True)
+    cf_ip_list_url = models.CharField(default='https://anycast.freecdn.workers.dev/', max_length=255)
+    cf_ip_list_from_file = models.CharField(default='', max_length=255, blank=True)
     max_ip = models.IntegerField(default=-1)
     ping_thread = models.IntegerField(default=100)
     ping_count = models.IntegerField(default=3)
@@ -77,10 +77,10 @@ class JobSetting(models.Model):
         oc = {}
         oc['dns'] = self.oc_dns
         oc['use_ip'] = self.oc_use_ip
-        oc['uuid'] = self.oc_uuid
-        oc['ws-path'] = self.oc_ws_path
-        oc['host'] = self.oc_host
-        oc['alterId'] = self.oc_alert_id 
+        # oc['uuid'] = self.oc_uuid
+        # oc['ws-path'] = self.oc_ws_path
+        # oc['host'] = self.oc_host
+        # oc['alterId'] = self.oc_alert_id 
         d['openclash'] = oc
         return d
 
@@ -94,11 +94,11 @@ class JobSetting(models.Model):
 class V2RayConfig(models.Model):
     job_setting = models.ForeignKey(JobSetting, on_delete=models.CASCADE)
     
-    alias = models.CharField(max_length=255)
-    uuid = models.CharField(max_length=128)
-    ws_path = models.CharField(max_length=255)
-    host = models.CharField(max_length=255)
-    alert_id = models.IntegerField(default=3)
+    alias = models.CharField(default='', max_length=255)
+    uuid = models.CharField(default='', max_length=128)
+    ws_path = models.CharField(default='', max_length=255)
+    host = models.CharField(default='', max_length=255)
+    alter_id = models.IntegerField(default=0)
 
 
 class JobEnv(models.Model):

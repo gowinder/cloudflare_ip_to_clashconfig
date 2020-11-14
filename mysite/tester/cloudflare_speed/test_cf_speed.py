@@ -1,8 +1,10 @@
 import pytest
+import sys
 import os
 import pathlib
 import yaml
 from .cf_speed import speed_test, open_clash, util
+sys.path.append('..')
 from ..models import V2RayConfig
 
 

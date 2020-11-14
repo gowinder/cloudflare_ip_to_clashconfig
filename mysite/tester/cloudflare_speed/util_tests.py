@@ -20,9 +20,9 @@ def test_extract_ip_range_to_ip():
     assert result_ip_list[0] == '192.168.2.1'
 
 def test_mkdir():
-    path = os.path.join(pathlib.Path(__file__).parent.absolute,
+    path = os.path.join(pathlib.Path(__file__).parent.absolute(),
         'test/test_mkdir')
-    shutil.rmtree(path)
+    shutil.rmtree(path, ignore_errors=True)
     assert not os.path.exists(path)
     util.mkdir(path)
     assert os.path.exists(path)

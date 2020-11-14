@@ -11,4 +11,4 @@ try:
 except Exception as ex:
     print(ex)
 
-curl --resolve speed.cloudflare.com:443:104.16.60.238 https://speed.cloudflare.com/__down?bytes=1000000000
+'curl --resolve speed.cloudflare.com:443:104.16.60.238 https://speed.cloudflare.com/__down?bytes=1000000000'

@@ -7,11 +7,10 @@ import ping3
 import math
 import requests
 import colorama
-from multiprocessing.pool import ThreadPool
+
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 import threading
-import socket
 from datetime import datetime, timedelta 
 from requests_toolbelt.adapters import host_header_ssl
 import humanfriendly
@@ -159,6 +158,7 @@ class cf_speed(object):
         self.speed_list = []
         self.pinged_count = 0
         self.pinged_mutex = threading.Lock()
+        self.v2ray_list = []
 
     def load_config(self, data):
         self.cfg = yaml.load(data, Loader=yaml.Loader)
@@ -178,10 +178,13 @@ class cf_speed(object):
                 url, colorama.Style.RESET_ALL)
             result = requests.get(url)
             r = result.content.decode('utf-8')
-            self.ip_list = r.splitlines()
+            self.ip_list = r.splitlines()            
+            from .util import util
+            self.ip_list = util.extract_ip_range_to_ip(self.ip_list)
             if self.cfg['cloudflare']['log']['ip_list']:
                 print(self.ip_list)
-            
+            print('total ip count:', len(self.ip_list))
+       
         self.speed_list = []
         for ip in self.ip_list:
             st = speed_test(ip.rstrip('\n'))
@@ -253,15 +256,16 @@ class cf_speed(object):
 
     def generate_openclash_config(self, template):
         print(' generate open clash config file')
-        clash = open_clash(template, self.speed_list, self.cfg['openclash'])
+        clash = open_clash(template, self.speed_list, self.cfg['openclash'], self.v2ray_list)
 
         return clash.generate_config(self.cfg['openclash']['use_ip'])        
 
 class open_clash(object):
-    def __init__(self, template, speed_list:list, clash_cfg):
+    def __init__(self, template, speed_list:list, clash_cfg, v2ray_list):
         self.template = template
         self.speed_list = speed_list
         self.clash_cfg = clash_cfg
+        self.v2ray_list = v2ray_list
     
     def generate_config(self, use_ip:int):
         # proxy_names = ruamel.yaml.comments.CommentedSeq()
@@ -273,19 +277,21 @@ class open_clash(object):
         assert(proxies[0]['name'] == 'vmess-template')
         proxy_template = copy.deepcopy(proxies[0])
         clash['Proxy'] = []
-        for i in range(use_ip):
-            st:speed_test = self.speed_list[i]
-            new_proxy = copy.deepcopy(proxy_template)
-            name = 'vmess-cf-ip-%d' % i
-            proxy_names.append(name)
-            new_proxy['name'] = name
-            new_proxy['server'] = st.ip
-            new_proxy['uuid'] = self.clash_cfg['uuid']
-            new_proxy['alterId'] = self.clash_cfg['alterId']
-            new_proxy['ws-path'] = self.clash_cfg['ws-path']
-            new_proxy['ws-headers']['Host'] = self.clash_cfg['host']
-            new_proxy['tls-hostname'] = self.clash_cfg['host']
-            clash['Proxy'].append(new_proxy)
+        for v2ray in self.v2ray_list:
+            print(v2ray)
+            for i in range(use_ip):
+                st:speed_test = self.speed_list[i]
+                new_proxy = copy.deepcopy(proxy_template)
+                name = 'vmess-cf-ip-%s-%d' % (v2ray.alias, i)
+                proxy_names.append(name)
+                new_proxy['name'] = name
+                new_proxy['server'] = st.ip
+                new_proxy['uuid'] = v2ray.uuid
+                new_proxy['alterId'] = v2ray.alter_id
+                new_proxy['ws-path'] = v2ray.ws_path
+                new_proxy['ws-headers']['Host'] = v2ray.host
+                new_proxy['tls-hostname'] = v2ray.host
+                clash['Proxy'].append(new_proxy)
         
         clash['dns']['nameserver'] = []
         clash['dns']['nameserver'].append(self.clash_cfg['dns'])
@@ -296,16 +302,14 @@ class open_clash(object):
         for p in gp:
             p['proxies'] = ruamel.yaml.comments.CommentedSeq()
             p['proxies'].fa.set_flow_style()
-            if p['name'] == 'auto':
+            if p['name'] == 'fallback-auto':
                 p['proxies'].append('DIRECT')
-                p['proxies'].append(fallback)
-            elif p['name'] == 'fallback-auto':
-                p['proxies'].append('DIRECT')
-            elif p['name'] == 'load-balance':
+            elif p['name'] == 'load-balance' or p['name'] == 'auto':
                 for name in proxy_names:
                     p['proxies'].append(name)
         
         return clash
+
 
 
 def test():

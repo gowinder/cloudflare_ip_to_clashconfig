@@ -2,7 +2,10 @@ from django.db.models.fields import reverse_related
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404
 
-from .models import JobSetting, JobRecord, JobEnv, OpenclashTemplate, SchedulerSetting
+from .models import (
+    JobSetting, JobRecord, JobEnv, 
+    OpenclashTemplate, SchedulerSetting,
+    V2RayConfig)
 
 from django.views.generic import(
     CreateView, DetailView, 
@@ -10,7 +13,7 @@ from django.views.generic import(
     )
 
 import django_rq
-from .tasks import tester_task
+from .tasks import run_task
 from .scheduler import start_scheduler
 
 def home(request):
@@ -47,15 +50,36 @@ class JobSettingDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         return context
 
+from django.forms.models import inlineformset_factory
+V2rayFormset = inlineformset_factory(
+    JobSetting, V2RayConfig, fields=('alias', 'uuid', 'ws_path', 'host', 'alter_id')
+)
+
 class JobSettingCreateView(CreateView):
     model = JobSetting
     fields = '__all__'
     template_name = 'tester/job_setting_form.html'
     success_url = '/'
 
+    def get_context_data(self, **kwargs):
+        # we need to overwrite get_context_data
+        # to make sure that our formset is rendered
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data["v2rays"] = V2rayFormset(self.request.POST)
+        else:
+            data["v2rays"] = V2rayFormset()
+        return data
+
+
     def form_valid(self, form):
-        #form.instance.author = self.request.user
-        return super().form_valid(form)
+        context = form.get_context_data()
+        v2rays = context['v2rays']
+        self.object = form.save(commit=False)
+        if v2rays.is_valid():
+            v2rays.instance = self.object
+            v2rays.save()
+        return super.form_valid(form)
     
     # def get_success_url(self):
     #     return reverse_related('/')
@@ -143,7 +167,7 @@ class OpenclashTemplateDeleteView(DeleteView):
     success_url = '/openclash_templates/'
 
 def start_tester_task(request, job_setting_id, template_id):
-    django_rq.enqueue(tester_task, job_setting_id, template_id)
+    django_rq.enqueue(run_task, job_setting_id, template_id)
 
     return home(request)
 

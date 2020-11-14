@@ -21,6 +21,7 @@ django-timezone-field==4.0
 forcediphttpsadapter==1.0.1
 humanfriendly==8.2
 idna==2.10
+importlib-metadata==2.0.0
 iniconfig==1.1.1
 kombu==4.6.11
 natsort==7.0.1
@@ -55,3 +56,4 @@ tqdm==4.50.2
 urllib3==1.25.10
 vine==1.3.0
 wcwidth==0.2.5
+zipp==3.4.0

@@ -3,7 +3,8 @@ import sys
 import os
 import pathlib
 import yaml
-from .cf_speed import speed_test, open_clash, util
+from .cf_speed import speed_test, open_clash
+from .util import util
 sys.path.append('..')
 from ..models import V2RayConfig
 
@@ -55,12 +56,6 @@ def test_generate_config():
         assert(len(oc_loaded['Proxy']) == len(v2ray_list) * len(speed_list))
 
 
-def test_load_yaml_file():
-    file = os.path.join(pathlib.Path(__file__).parent.absolute(), 
-        '../../../openclash.template.yaml')
-    data = util.load_yaml_file(file)
-    assert data != None
-    assert data['Proxy'] != None
-    assert data['Proxy'][0]['name'] == 'vmess-template'
+
     
     

@@ -7,11 +7,10 @@ import ping3
 import math
 import requests
 import colorama
-from multiprocessing.pool import ThreadPool
+
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 import threading
-import socket
 from datetime import datetime, timedelta 
 from requests_toolbelt.adapters import host_header_ssl
 import humanfriendly
@@ -179,10 +178,13 @@ class cf_speed(object):
                 url, colorama.Style.RESET_ALL)
             result = requests.get(url)
             r = result.content.decode('utf-8')
-            self.ip_list = r.splitlines()
+            self.ip_list = r.splitlines()            
+            from .util import util
+            self.ip_list = util.extract_ip_range_to_ip(self.ip_list)
             if self.cfg['cloudflare']['log']['ip_list']:
                 print(self.ip_list)
-            
+            print('total ip count:', len(self.ip_list))
+       
         self.speed_list = []
         for ip in self.ip_list:
             st = speed_test(ip.rstrip('\n'))
@@ -308,22 +310,7 @@ class open_clash(object):
         
         return clash
 
-class util():
-    @staticmethod
-    def openclash_to_yaml(oc:open_clash, filename):
-        file = os.path.join(pathlib.Path(__file__).parent.absolute(), filename)
-        with open(file, 'w+', encoding='utf-8') as writer:
-            #yaml.dump(clash, writer, indent=4, mapping=2, sequence=4)
-            yaml_dump = YAML()
-            yaml_dump.indent(mapping=2, sequence=4, offset=2)
-            yaml_dump.dump(oc, writer)
-            
-    @staticmethod
-    def load_yaml_file(filename):
-        with open(filename, 'r', encoding='utf-8') as f:
-            d = f.read()
-            return yaml.load(d, Loader=yaml.Loader)
-        return None
+
 
 def test():
     sp = cf_speed()

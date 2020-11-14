@@ -1,6 +1,7 @@
 from django_rq import job
 from .models import JobSetting, OpenclashTemplate, JobEnv, SchedulerSetting, V2RayConfig
-from .cloudflare_speed.cf_speed import cf_speed, util
+from .cloudflare_speed.cf_speed import cf_speed
+from .cloudflare_speed.util import util
 from django.conf import settings as djangoSettings
 from ruamel.yaml import YAML
 import yaml

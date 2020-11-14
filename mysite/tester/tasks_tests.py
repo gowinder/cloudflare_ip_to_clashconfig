@@ -11,11 +11,17 @@ from django.conf import settings
 from mysite.settings import BASE_DIR
 from django.core.management import call_command
 from django.conf import settings as djangoSettings
-from .cloudflare_speed.cf_speed import util
+from .cloudflare_speed.util import util
 
 
 USE_IP = 3
 USE_V2RAY = 3
+
+LOG_SORTED_PING_LIST = True
+LOG_SPEED = True
+LOG_SORTED_SPEED_LIST = True
+CF_IP_URL = 'https://www.cloudflare.com/ips-v4'
+IP_LIST_FILE = os.path.join(pathlib.Path(__file__).parent.absolute(), 'cloudflare_speed/ip_list.txt')
 
 @pytest.fixture(scope='session')
 def django_db_setup(django_db_setup, django_db_blocker):
@@ -25,7 +31,12 @@ def django_db_setup(django_db_setup, django_db_blocker):
             JobSetting.objects.all().delete()
             JobSetting.objects.create(
                alias=job_setting_alias,
-               oc_use_ip=USE_IP)
+               cf_ip_list_url=CF_IP_URL,
+               cf_ip_list_from_file=IP_LIST_FILE,
+               oc_use_ip=USE_IP,
+               log_sorted_ping_list=LOG_SORTED_PING_LIST,
+               log_speed=LOG_SPEED,
+               log_sorted_speed_list=LOG_SORTED_SPEED_LIST)
 
             assert JobSetting.objects.count() == 1
             assert JobSetting.objects.first().alias == job_setting_alias

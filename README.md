@@ -9,3 +9,6 @@
 * ~~can set auto proxy group use config~~
 * ~~add unit test~~
 * support use https://www.cloudflare.com/ips-v4 to extract ipv4 range to ip
+* list rq queue
+* get rq task result and log
+* control rq task(cancel)
